@@ -36,11 +36,15 @@ import net.minestom.server.particle.ParticleCreator;
 import net.minestom.server.potion.PotionEffect;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.utils.MathUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MULTIPLIER;
+import static io.github.bloepiloepi.pvp.utils.Utils.scaleToTps;
 
 public class AttackManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AttackManager.class);
@@ -64,8 +68,8 @@ public class AttackManager {
 		return node;
 	}
 	
-	public static float getAttackCooldownProgressPerTick(Player player) {
-		return (float) (1.0D / player.getAttributeValue(Attribute.ATTACK_SPEED) * 20.0D);
+	public static float getAttackCooldownProgressPerTick(@NotNull Player player) {
+		return (float) (1.0D / player.getAttributeValue(Attribute.ATTACK_SPEED) * scaleToTps(20.0D));
 	}
 	
 	@SuppressWarnings("UnstableApiUsage")

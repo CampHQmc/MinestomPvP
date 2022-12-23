@@ -30,7 +30,6 @@ import net.minestom.server.event.EventListener;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.event.entity.EntityTickEvent;
-import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
 import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.event.trait.EntityInstanceEvent;
 import net.minestom.server.gamedata.tags.Tag;
@@ -44,13 +43,17 @@ import net.minestom.server.potion.Potion;
 import net.minestom.server.potion.PotionEffect;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.world.Difficulty;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MULTIPLIER;
+
 public class DamageListener {
 
-	public static EventNode<EntityInstanceEvent> events(DamageConfig config) {
+	@SuppressWarnings("UnstableApiUsage")
+	public static @NotNull EventNode<EntityInstanceEvent> events(@NotNull DamageConfig config) {
 		EventNode<EntityInstanceEvent> node = EventNode.type("damage-events", PvPConfig.ENTITY_INSTANCE_FILTER);
 
 		node.addListener(EventListener.builder(EntityDamageEvent.class)
@@ -74,7 +77,7 @@ public class DamageListener {
 		return node;
 	}
 
-	private static void handleEntityFallDamage(LivingEntity livingEntity, Pos currentPosition, Pos newPosition, boolean isOnGround) {
+	private static void handleEntityFallDamage(@NotNull LivingEntity livingEntity, @NotNull Pos currentPosition, @NotNull Pos newPosition, boolean isOnGround) {
 		double dy = newPosition.y() - currentPosition.y();
 		Double fallDistance = Tracker.fallDistance.getOrDefault(livingEntity.getUuid(), 0.0);
 
@@ -95,6 +98,7 @@ public class DamageListener {
 				double d = Math.min(0.2 + damageDistance / 15.0, 2.5);
 				int particleCount = (int) (150 * d);
 
+				//noinspection UnstableApiUsage
 				livingEntity.sendPacketToViewersAndSelf(ParticleCreator.createParticlePacket(
 						Particle.BLOCK,
 						false,
@@ -245,7 +249,7 @@ public class DamageListener {
 
 		boolean hurtSoundAndAnimation = true;
 		float amountBeforeProcessing = amount;
-		if (Tracker.invulnerableTime.getOrDefault(entity.getUuid(), 0) > 10) {
+		if (Tracker.invulnerableTime.getOrDefault(entity.getUuid(), 0) > 10 * TPS_MULTIPLIER) {
 			float lastDamage = Tracker.lastDamageTaken.get(entity.getUuid());
 
 			if (amount <= lastDamage) {
@@ -277,13 +281,15 @@ public class DamageListener {
 		Tracker.lastDamageTaken.put(entity.getUuid(), amountBeforeProcessing);
 
 		if (hurtSoundAndAnimation) {
-			Tracker.invulnerableTime.put(entity.getUuid(), finalDamageEvent.getInvulnerabilityTicks() + 10);
+			//TODO(CamperSamu): make invulerability customizable, both via cfg and via API (also prepare a mainline PR for this)
+			Tracker.invulnerableTime.put(entity.getUuid(), finalDamageEvent.getInvulnerabilityTicks() + (10 * (int) TPS_MULTIPLIER));
 
 			if (shield) {
 				entity.triggerStatus((byte) 29);
 			} else if (type instanceof CustomEntityDamage && ((CustomEntityDamage) type).isThorns()) {
 				entity.triggerStatus((byte) 33);
 			} else {
+				//TODO(CamperSamu): enum statuses instead of relying on nameless ints
 				byte status;
 				if (type == CustomDamageType.DROWN) {
 					//Drown sound and animation
@@ -390,6 +396,7 @@ public class DamageListener {
 					entity.getPosition(),
 					1.0f, 1.0f
 			);
+			//noinspection UnstableApiUsage
 			entity.sendPacketToViewersAndSelf(damageSoundPacket);
 		}
 
@@ -436,9 +443,10 @@ public class DamageListener {
 		if (hasTotem) {
 			entity.setHealth(1.0F);
 			entity.clearEffects();
-			entity.addEffect(new Potion(PotionEffect.REGENERATION, (byte) 1, 900, PotionListener.defaultFlags()));
-			entity.addEffect(new Potion(PotionEffect.ABSORPTION, (byte) 1, 100, PotionListener.defaultFlags()));
-			entity.addEffect(new Potion(PotionEffect.FIRE_RESISTANCE, (byte) 0, 800, PotionListener.defaultFlags()));
+			//TODO(samu): fix clientside display via packets
+			entity.addEffect(new Potion(PotionEffect.REGENERATION, (byte) 1, (900 * (int) TPS_MULTIPLIER), PotionListener.defaultFlags()));
+			entity.addEffect(new Potion(PotionEffect.ABSORPTION, (byte) 1, (100 * (int) TPS_MULTIPLIER) , PotionListener.defaultFlags()));
+			entity.addEffect(new Potion(PotionEffect.FIRE_RESISTANCE, (byte) 0, (800 * (int) TPS_MULTIPLIER), PotionListener.defaultFlags()));
 
 			//Totem particles
 			entity.triggerStatus((byte) 35);

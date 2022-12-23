@@ -14,6 +14,7 @@ import net.minestom.server.event.item.EntityEquipEvent;
 import net.minestom.server.event.player.PlayerChangeHeldSlotEvent;
 import net.minestom.server.event.trait.EntityInstanceEvent;
 import net.minestom.server.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,8 @@ import java.util.UUID;
 
 public class ArmorToolListener {
 	
-	public static EventNode<EntityInstanceEvent> events(ArmorToolConfig config) {
+	@SuppressWarnings("UnstableApiUsage")
+	public static @NotNull EventNode<EntityInstanceEvent> events(@NotNull ArmorToolConfig config) {
 		EventNode<EntityInstanceEvent> node = EventNode.type("armor-tool-events", PvPConfig.ENTITY_INSTANCE_FILTER);
 		
 		if (config.isArmorModifiersEnabled()) node.addListener(EntityEquipEvent.class, event -> {
@@ -42,7 +44,7 @@ public class ArmorToolListener {
 		return node;
 	}
 	
-	private static void changeArmorModifiers(LivingEntity entity, EquipmentSlot slot, ItemStack newItem, boolean legacy) {
+	private static void changeArmorModifiers(@NotNull LivingEntity entity, EquipmentSlot slot, @NotNull ItemStack newItem, boolean legacy) {
 		//Remove previous armor
 		ItemStack previousStack = entity.getEquipment(slot);
 		ArmorMaterial material = ArmorMaterial.fromMaterial(previousStack.material());
@@ -53,7 +55,7 @@ public class ArmorToolListener {
 		addAttributeModifiers(entity, ArmorMaterial.getAttributes(material, slot, newItem, legacy));
 	}
 	
-	private static void changeHandModifiers(LivingEntity entity, EquipmentSlot slot, ItemStack newItem, boolean legacy) {
+	private static void changeHandModifiers(@NotNull LivingEntity entity, EquipmentSlot slot, @NotNull ItemStack newItem, boolean legacy) {
 		//Remove previous attribute modifiers
 		ItemStack previousStack = entity.getEquipment(slot);
 		Tool tool = Tool.fromMaterial(previousStack.material());
@@ -64,7 +66,7 @@ public class ArmorToolListener {
 		addAttributeModifiers(entity, Tool.getAttributes(tool, slot, newItem, legacy));
 	}
 	
-	private static void removeAttributeModifiers(LivingEntity entity, Map<Attribute, List<UUID>> modifiers) {
+	private static void removeAttributeModifiers(LivingEntity entity, @NotNull Map<Attribute, List<UUID>> modifiers) {
 		for (Map.Entry<Attribute, List<UUID>> entry : modifiers.entrySet()) {
 			AttributeInstance attribute = entity.getAttribute(entry.getKey());
 			List<AttributeModifier> toRemove = new ArrayList<>();
@@ -81,7 +83,7 @@ public class ArmorToolListener {
 		}
 	}
 	
-	private static void addAttributeModifiers(LivingEntity entity, Map<Attribute, List<AttributeModifier>> modifiers) {
+	private static void addAttributeModifiers(LivingEntity entity, @NotNull Map<Attribute, List<AttributeModifier>> modifiers) {
 		for (Map.Entry<Attribute, List<AttributeModifier>> entry : modifiers.entrySet()) {
 			AttributeInstance attribute = entity.getAttribute(entry.getKey());
 			for (AttributeModifier modifier : entry.getValue()) {

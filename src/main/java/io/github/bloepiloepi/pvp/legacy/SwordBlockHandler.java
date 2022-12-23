@@ -13,11 +13,13 @@ import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.event.trait.PlayerInstanceEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import org.jetbrains.annotations.NotNull;
 
 public class SwordBlockHandler {
 	private static final ItemStack SHIELD = ItemStack.of(Material.SHIELD);
 	
-	public static EventNode<PlayerInstanceEvent> events() {
+	@SuppressWarnings("UnstableApiUsage")
+	public static @NotNull EventNode<PlayerInstanceEvent> events() {
 		EventNode<PlayerInstanceEvent> node = EventNode.type("legacy-sword-block", PvPConfig.PLAYER_INSTANCE_FILTER);
 		
 		node.addListener(EventListener.builder(PlayerUseItemEvent.class)
@@ -45,7 +47,7 @@ public class SwordBlockHandler {
 		return node;
 	}
 	
-	private static void handleUseItem(PlayerUseItemEvent event) {
+	private static void handleUseItem(@NotNull PlayerUseItemEvent event) {
 		Player player = event.getPlayer();
 		
 		if (event.getHand() == Player.Hand.MAIN && isSword(event.getItemStack())
@@ -60,24 +62,25 @@ public class SwordBlockHandler {
 			
 			player.setItemInOffHand(SHIELD);
 			player.refreshActiveHand(true, true, false);
+			//noinspection UnstableApiUsage
 			player.sendPacketToViewersAndSelf(player.getMetadataPacket());
 		}
 	}
 	
-	private static void unblock(Player player) {
+	private static void unblock(@NotNull Player player) {
 		if (Tracker.blockReplacementItem.containsKey(player.getUuid())) {
 			Tracker.blockingSword.put(player.getUuid(), false);
 			player.setItemInOffHand(Tracker.blockReplacementItem.get(player.getUuid()));
 		}
 	}
 	
-	private static void handleUpdateState(ItemUpdateStateEvent event) {
+	private static void handleUpdateState(@NotNull ItemUpdateStateEvent event) {
 		if (event.getHand() == Player.Hand.OFF && event.getItemStack().material() == Material.SHIELD) {
 			unblock(event.getPlayer());
 		}
 	}
 	
-	private static void handleSwapItem(PlayerSwapItemEvent event) {
+	private static void handleSwapItem(@NotNull PlayerSwapItemEvent event) {
 		Player player = event.getPlayer();
 		if (player.getItemInOffHand().material() == Material.SHIELD
 				&& Tracker.blockingSword.get(player.getUuid())) {
@@ -85,7 +88,7 @@ public class SwordBlockHandler {
 		}
 	}
 	
-	private static void handleChangeSlot(PlayerChangeHeldSlotEvent event) {
+	private static void handleChangeSlot(@NotNull PlayerChangeHeldSlotEvent event) {
 		Player player = event.getPlayer();
 		if (player.getItemInOffHand().material() == Material.SHIELD
 				&& Tracker.blockingSword.get(player.getUuid())) {
@@ -93,7 +96,7 @@ public class SwordBlockHandler {
 		}
 	}
 	
-	private static boolean isSword(ItemStack stack) {
+	private static boolean isSword(@NotNull ItemStack stack) {
 		return stack.material().registry().translationKey().contains("sword");
 	}
 }

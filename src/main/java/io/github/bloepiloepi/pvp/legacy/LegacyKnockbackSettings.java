@@ -1,6 +1,9 @@
 package io.github.bloepiloepi.pvp.legacy;
 
-import net.minestom.server.MinecraftServer;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import static net.minestom.server.MinecraftServer.*;
 
 /**
  * Class which contains settings for legacy knockback.
@@ -14,15 +17,15 @@ public record LegacyKnockbackSettings(double horizontal, double vertical,
 	
 	public LegacyKnockbackSettings(double horizontal, double vertical, double verticalLimit,
 	                               double extraHorizontal, double extraVertical) {
-		double tps = MinecraftServer.TICK_PER_SECOND;
-		this.horizontal = horizontal * tps * 0.8;
-		this.vertical = (vertical - 0.04) * tps;
-		this.verticalLimit = verticalLimit * tps;
-		this.extraHorizontal = extraHorizontal * tps * 0.8;
-		this.extraVertical = (extraVertical - 0.04) * tps;
+		this.horizontal = horizontal * TICK_PER_SECOND * 0.8;
+		this.vertical = (vertical - 0.04) * TICK_PER_SECOND;
+		this.verticalLimit = verticalLimit * TICK_PER_SECOND;
+		this.extraHorizontal = extraHorizontal * TICK_PER_SECOND * 0.8;
+		this.extraVertical = (extraVertical - 0.04) * TICK_PER_SECOND;
 	}
 	
-	public static Builder builder() {
+	@Contract(value = " -> new", pure = true)
+	public static @NotNull Builder builder() {
 		return new Builder();
 	}
 	
@@ -31,26 +34,31 @@ public record LegacyKnockbackSettings(double horizontal, double vertical,
 		private double verticalLimit = 0.4;
 		private double extraHorizontal = 0.5, extraVertical = 0.1;
 		
+		@SuppressWarnings("unused")	//API
 		public Builder horizontal(double horizontal) {
 			this.horizontal = horizontal;
 			return this;
 		}
-		
+
+		@SuppressWarnings("unused")	//API
 		public Builder vertical(double vertical) {
 			this.vertical = vertical;
 			return this;
 		}
-		
+
+		@SuppressWarnings("unused")	//API
 		public Builder verticalLimit(double verticalLimit) {
 			this.verticalLimit = verticalLimit;
 			return this;
 		}
-		
+
+		@SuppressWarnings("unused")	//API
 		public Builder extraHorizontal(double extraHorizontal) {
 			this.extraHorizontal = extraHorizontal;
 			return this;
 		}
-		
+
+		@SuppressWarnings("unused")	//API
 		public Builder extraVertical(double extraVertical) {
 			this.extraVertical = extraVertical;
 			return this;

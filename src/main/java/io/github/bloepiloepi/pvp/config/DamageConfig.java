@@ -4,6 +4,8 @@ import io.github.bloepiloepi.pvp.listeners.DamageListener;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.EntityInstanceEvent;
 
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MULTIPLIER;
+
 /**
  * Creates an EventNode with damage events.
  * This includes armor, shields, damage invulnerability, and fall damage.
@@ -29,7 +31,7 @@ public class DamageConfig extends ElementConfig<EntityInstanceEvent> {
 		this.equipmentDamageEnabled = equipmentDamageEnabled;
 		this.shieldEnabled = shieldEnabled;
 		this.legacyShieldMechanics = legacyShieldMechanics;
-		this.invulnerabilityTicks = invulnerabilityTicks;
+		this.invulnerabilityTicks = (int) (invulnerabilityTicks * TPS_MULTIPLIER);
 		this.armorEnabled = armorEnabled;
 		this.exhaustionEnabled = exhaustionEnabled;
 		this.legacyKnockback = legacyKnockback;

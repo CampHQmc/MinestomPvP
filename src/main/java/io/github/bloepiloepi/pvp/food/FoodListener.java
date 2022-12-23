@@ -19,6 +19,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.potion.Potion;
 import net.minestom.server.sound.SoundEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,7 +28,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class FoodListener {
 	
-	public static EventNode<PlayerInstanceEvent> events(FoodConfig config) {
+	@SuppressWarnings("UnstableApiUsage")
+	public static @NotNull EventNode<PlayerInstanceEvent> events(@NotNull FoodConfig config) {
 		EventNode<PlayerInstanceEvent> node = EventNode.type("food-events", PvPConfig.PLAYER_INSTANCE_FILTER);
 		
 		node.addListener(PlayerTickEvent.class, event -> {
@@ -149,7 +151,7 @@ public class FoodListener {
 		return node;
 	}
 	
-	public static void eatSounds(Player player) {
+	public static void eatSounds(@NotNull Player player) {
 		ItemStack stack = player.getItemInHand(Objects.requireNonNull(player.getEatingHand()));
 		
 		FoodComponent component = FoodComponents.fromMaterial(stack.material());

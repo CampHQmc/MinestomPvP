@@ -10,6 +10,8 @@ import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.item.Material;
 import net.minestom.server.world.Difficulty;
 
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MULTIPLIER;
+
 public class HungerManager {
 	private final Player player;
 	private float exhaustion;
@@ -52,20 +54,20 @@ public class HungerManager {
 		if (config.isNaturalRegenerationEnabled()) {
 			if (!config.isLegacy() && player.getFoodSaturation() > 0.0F && player.getHealth() > 0.0F && player.getHealth() < player.getMaxHealth() && player.getFood() >= 20) {
 				++this.foodStarvationTimer;
-				if (this.foodStarvationTimer >= 10) {
+				if (this.foodStarvationTimer >= 10 * TPS_MULTIPLIER) {
 					float f = Math.min(player.getFoodSaturation(), 6.0F);
 					regenerate(f / 6.0F, f);
 					this.foodStarvationTimer = 0;
 				}
 			} else if (player.getFood() >= 18 && player.getHealth() > 0.0F && player.getHealth() < player.getMaxHealth()) {
 				++this.foodStarvationTimer;
-				if (this.foodStarvationTimer >= 80) {
+				if (this.foodStarvationTimer >= 80 * TPS_MULTIPLIER) {
 					regenerate(1.0F, config.isLegacy() ? 3.0F : 6.0F);
 					this.foodStarvationTimer = 0;
 				}
 			} else if (player.getFood() <= 0) {
 				++this.foodStarvationTimer;
-				if (this.foodStarvationTimer >= 80) {
+				if (this.foodStarvationTimer >= 80 * TPS_MULTIPLIER) {
 					if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
 						player.damage(CustomDamageType.STARVE, 1.0F);
 					}
