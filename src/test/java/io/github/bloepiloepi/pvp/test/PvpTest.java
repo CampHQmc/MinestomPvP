@@ -134,11 +134,9 @@ public class PvpTest {
 				}
 			});
 		}});
-		
-		eventHandler.addListener(PlayerTickEvent.class, event -> {
-			event.getPlayer().sendActionBar(Component.text(event.getPlayer().getVelocity().toString()));
-		});
-		
+
+		eventHandler.addListener(PlayerTickEvent.class, event -> event.getPlayer().sendActionBar(Component.text(event.getPlayer().getVelocity().toString())));
+
 		Commands.init();
 		
 		OpenToLAN.open();

@@ -75,7 +75,7 @@ public class AttackManager {
 	}
 	
 	public static float getAttackCooldownProgressPerTick(@NotNull Player player) {
-		return (1 / player.getAttributeValue(Attribute.ATTACK_SPEED) * scaleToTps(20));
+		return (float) (1 / player.getAttributeValue(Attribute.ATTACK_SPEED) * scaleToTps(20));
 	}
 	
 	@SuppressWarnings("UnstableApiUsage")
