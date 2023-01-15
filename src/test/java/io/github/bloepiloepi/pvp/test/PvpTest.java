@@ -1,7 +1,6 @@
 package io.github.bloepiloepi.pvp.test;
 
 import io.github.bloepiloepi.pvp.PvpExtension;
-import io.github.bloepiloepi.pvp.config.PotionConfig;
 import io.github.bloepiloepi.pvp.config.PvPConfig;
 import io.github.bloepiloepi.pvp.damage.CustomDamageType;
 import io.github.bloepiloepi.pvp.events.LegacyKnockbackEvent;
@@ -9,9 +8,11 @@ import io.github.bloepiloepi.pvp.explosion.PvpExplosionSupplier;
 import io.github.bloepiloepi.pvp.legacy.LegacyKnockbackSettings;
 import io.github.bloepiloepi.pvp.potion.effect.CustomPotionEffect;
 import io.github.bloepiloepi.pvp.test.commands.Commands;
+import io.github.togar2.fluids.MinestomFluids;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.attribute.Attribute;
+import net.minestom.server.command.builder.Command;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
@@ -22,11 +23,16 @@ import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.event.player.PlayerTickEvent;
+import net.minestom.server.event.player.PlayerUseItemOnBlockEvent;
 import net.minestom.server.extras.lan.OpenToLAN;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.instance.block.Block;
+import net.minestom.server.item.Material;
 import net.minestom.server.potion.Potion;
 import net.minestom.server.potion.PotionEffect;
+import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.utils.time.TimeUnit;
+import net.minestom.server.world.DimensionType;
 
 import java.util.Optional;
 
@@ -34,9 +40,13 @@ public class PvpTest {
 	public static void main(String[] args) {
 		MinecraftServer server = MinecraftServer.init();
 		PvpExtension.init();
+		MinestomFluids.init();
 		//VelocityProxy.enable("tj7MulOtnIDe");
 		
-		Instance instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+		DimensionType fullbright = DimensionType.builder(NamespaceID.from("idk")).ambientLight(1.0f).build();
+		MinecraftServer.getDimensionTypeManager().addDimension(fullbright);
+		
+		Instance instance = MinecraftServer.getInstanceManager().createInstanceContainer(fullbright);
 		instance.setChunkGenerator(new DemoGenerator());
 		instance.enableAutoChunkLoad(true);
 		
@@ -83,7 +93,7 @@ public class PvpTest {
 		
 		MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, event -> {
 			event.getPlayer().setGameMode(GameMode.CREATIVE);
-			PvpExtension.setLegacyAttack(event.getPlayer(), true);
+			//PvpExtension.setLegacyAttack(event.getPlayer(), true);
 			
 			event.getPlayer().setPermissionLevel(4);
 			event.getPlayer().addEffect(new Potion(PotionEffect.REGENERATION, (byte) 10, CustomPotionEffect.PERMANENT));
@@ -103,9 +113,27 @@ public class PvpTest {
 		
 		GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
 		eventHandler.addChild(PvPConfig.defaultBuilder()
-				.potion(PotionConfig.legacyBuilder().drinking(false))
+				//.potion(PotionConfig.legacyBuilder().drinking(false))
 				.build().createNode()
 		);
+		
+		eventHandler.addChild(MinestomFluids.events());
+		
+		eventHandler.addListener(PlayerUseItemOnBlockEvent.class, event -> {
+			if (event.getItemStack().material() == Material.WATER_BUCKET) {
+				event.getInstance().setBlock(event.getPosition().relative(event.getBlockFace()), Block.WATER);
+			}
+			event.getPlayer().getInventory().update();
+		});
+		
+		MinecraftServer.getCommandManager().register(new Command("test") {{
+			setDefaultExecutor((sender, args) -> {
+				if (sender instanceof Player player) {
+					player.refreshOnGround(true);
+					player.takeKnockback(0.4f, -0.00825, -0.00716738);
+				}
+			});
+		}});
 		
 		eventHandler.addListener(PlayerTickEvent.class, event -> {
 			event.getPlayer().sendActionBar(Component.text(event.getPlayer().getVelocity().toString()));

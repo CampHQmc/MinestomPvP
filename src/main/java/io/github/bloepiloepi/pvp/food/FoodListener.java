@@ -33,9 +33,7 @@ public class FoodListener {
 		EventNode<PlayerInstanceEvent> node = EventNode.type("food-events", PvPConfig.PLAYER_INSTANCE_FILTER);
 		
 		node.addListener(PlayerTickEvent.class, event -> {
-			if (Tracker.hungerManager.containsKey(event.getPlayer().getUuid())) {
-				Tracker.hungerManager.get(event.getPlayer().getUuid()).update(config);
-			}
+			if (event.getPlayer().isOnline()) HungerManager.update(event.getPlayer(), config);
 		});
 		
 		node.addListener(EventListener.builder(PlayerPreEatEvent.class).handler(event -> {
@@ -61,7 +59,7 @@ public class FoodListener {
 		node.addListener(EventListener.builder(PlayerEatEvent.class).handler(event -> {
 			Player player = event.getPlayer();
 			ItemStack stack = event.getItemStack();
-			Tracker.hungerManager.get(player.getUuid()).eat(stack.material());
+			HungerManager.eat(player, stack.material());
 			
 			FoodComponent component = FoodComponents.fromMaterial(stack.material());
 			assert component != null;
@@ -157,7 +155,7 @@ public class FoodListener {
 		FoodComponent component = FoodComponents.fromMaterial(stack.material());
 		
 		long useTime = getUseTime(component);
-		long usedDuration = System.currentTimeMillis() - Tracker.itemUseStartTime.get(player.getUuid());
+		long usedDuration = System.currentTimeMillis() - player.getTag(Tracker.ITEM_USE_START_TIME);
 		long usedTicks = usedDuration / MinecraftServer.TICK_MS;
 		long remainingUseTicks = useTime - usedTicks;
 		

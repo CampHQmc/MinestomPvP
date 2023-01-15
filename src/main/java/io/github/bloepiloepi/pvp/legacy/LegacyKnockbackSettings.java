@@ -17,11 +17,11 @@ public record LegacyKnockbackSettings(double horizontal, double vertical,
 	
 	public LegacyKnockbackSettings(double horizontal, double vertical, double verticalLimit,
 	                               double extraHorizontal, double extraVertical) {
-		this.horizontal = horizontal * TICK_PER_SECOND * 0.8;
-		this.vertical = (vertical - 0.04) * TICK_PER_SECOND;
+		this.horizontal = horizontal * TICK_PER_SECOND;
+		this.vertical = vertical * TICK_PER_SECOND;
 		this.verticalLimit = verticalLimit * TICK_PER_SECOND;
-		this.extraHorizontal = extraHorizontal * TICK_PER_SECOND * 0.8;
-		this.extraVertical = (extraVertical - 0.04) * TICK_PER_SECOND;
+		this.extraHorizontal = extraHorizontal * TICK_PER_SECOND;
+		this.extraVertical = extraVertical * TICK_PER_SECOND;
 	}
 	
 	@Contract(value = " -> new", pure = true)
