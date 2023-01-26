@@ -31,6 +31,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MULTIPLIER;
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MUL_ROUND;
+
 public abstract class AbstractArrow extends CustomEntityProjectile {
 	private static final double ARROW_BASE_DAMAGE = 2.0;
 	
@@ -99,7 +102,7 @@ public abstract class AbstractArrow extends CustomEntityProjectile {
 	
 	protected void tickRemoval() {
 		ticks++;
-		if (ticks >= 1200) {
+		if (ticks >= 1200 * TPS_MULTIPLIER) {
 			remove();
 		}
 	}
@@ -213,7 +216,7 @@ public abstract class AbstractArrow extends CustomEntityProjectile {
 					1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
 		}
 		
-		pickupDelay = 7;
+		pickupDelay = 7 * TPS_MUL_ROUND;
 		setCritical(false);
 		setPiercingLevel((byte) 0);
 		setSound(SoundEvent.ENTITY_ARROW_HIT);

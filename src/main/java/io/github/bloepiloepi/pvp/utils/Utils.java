@@ -7,6 +7,7 @@ import static net.minestom.server.MinecraftServer.TICK_PER_SECOND;
 public final class Utils {
     public static final int STANDARD_TPS = 20;
     public static final float TPS_MULTIPLIER = (float) TICK_PER_SECOND / STANDARD_TPS;  //NOTE(CamperSamu): use float for accuracy, consider option for int instead
+    public static final int TPS_MUL_ROUND = Math.round(TPS_MULTIPLIER);
 
     private Utils(){}
 

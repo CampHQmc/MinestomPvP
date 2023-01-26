@@ -38,6 +38,8 @@ import java.util.Optional;
 
 public class PvpTest {
 	public static void main(String[] args) {
+		System.setProperty("minestom.tps", "20");
+//		System.setProperty("minestom.tps", "128");
 		MinecraftServer server = MinecraftServer.init();
 		PvpExtension.init();
 		MinestomFluids.init();

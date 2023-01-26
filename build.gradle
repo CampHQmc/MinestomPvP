@@ -9,6 +9,7 @@ group 'io.github.bloepiloepi'
 version '1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 
     maven { url 'https://repo.spongepowered.org/maven' }
@@ -23,9 +24,9 @@ java {
 }
 
 dependencies {
-    compileOnly 'com.github.Minestom.Minestom:Minestom:f291437ada'
-    testImplementation 'com.github.Minestom.Minestom:Minestom:f291437ada'
-    implementation 'com.github.TogAr2:MinestomFluids:dfb5df225b'
+    compileOnly 'com.github.CampHQmc.Minestom:Minestom:aa54e05b22'
+    testImplementation 'com.github.CampHQmc.Minestom:Minestom:aa54e05b22'
+    implementation 'com.github.TogAr2:MinestomFluids:044a6a0778'
 }
 
 publishing {

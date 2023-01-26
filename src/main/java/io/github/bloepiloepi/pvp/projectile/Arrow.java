@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static io.github.bloepiloepi.pvp.utils.Utils.TPS_MULTIPLIER;
+
 public class Arrow extends AbstractArrow {
 	public static final ItemStack DEFAULT_ARROW = ItemStack.of(Material.ARROW);
 	public static final Predicate<ItemStack> ARROW_PREDICATE = stack ->
@@ -76,7 +78,7 @@ public class Arrow extends AbstractArrow {
 	public void update(long time) {
 		super.update(time);
 		
-		if (onGround && stuckTime >= 600 && !potion.getCustomPotionEffects().isEmpty()) {
+		if (onGround && stuckTime >= 600 * TPS_MULTIPLIER && !potion.getCustomPotionEffects().isEmpty()) {
 			triggerStatus((byte) 0);
 			
 			fixedColor = false;
